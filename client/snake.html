@@ -4,8 +4,12 @@
 	<meta charset="UTF-8">
 	<title>Snake - The Game</title>
 	<style>
-		body {
+		.grass-background {
 			background: url('images/grass.jpg') repeat;
+		}
+
+		.hidden {
+			display: none;
 		}
 
 		#game {
@@ -19,8 +23,17 @@
 	</style>
 </head>
 <body>
-	<canvas id="game" width="500" height="500"></canvas>
+	<form>
+		<label>Username: <input type="text" id="username"></label>
+		<button id="create-game">Create game</button>
+		<br>
+		<label>Game Id: <input type="text" id="game-id"></label>
+		<button id="join-game">Join game</button>
+	</form>
 
+	<canvas class="hidden" id="game" width="500" height="500"></canvas>
+	
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script src="bower_components/requirejs/require.js" data-main="app"></script>
 </body>
 </html>

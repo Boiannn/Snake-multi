@@ -70,7 +70,7 @@ app.all("*", function(req, res, next) {
 app.use(bodyParser.json());
 
 app.get("/", function(req, res) {
-  res.send("HELLO!");
+  res.sendfile("../client/snake.html");
 });
 
 app.post("/createGame", function(req, res) {
