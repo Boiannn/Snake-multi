@@ -12,7 +12,7 @@
     $(function() {
         console.log("I AM READY");
         var
-            socket = new io("http://192.168.1.44:3000"),
+            socket = new io("http://localhost:3000"),
             socketId = null,
             gameId = null;
 
@@ -36,7 +36,7 @@
         function runAfterSocketHasConnected() {
             $("#createGame").on("click", function() {
                 $.ajax({
-                    url: "http://192.168.1.44:3000/createGame",
+                    url: "http://localhost:3000/createGame",
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify({
@@ -52,7 +52,7 @@
             $("#joinGame").on("click", function() {
                 gameId = $("#joinGameId").val();
                 $.ajax({
-                    url: "http://192.168.1.44:3000/joinGame",
+                    url: "http://localhost:3000/joinGame",
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify({

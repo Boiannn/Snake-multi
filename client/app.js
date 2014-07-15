@@ -10,7 +10,7 @@ require.config({
 
 require(['snake', 'field', 'input', 'food'], function(snake, field, input, food) {
 
-  var socket = new io('http://192.168.1.142:3000'),
+  var socket = new io('http://localhost:3000'),
       socketID = null,
       gameID = null;
 
@@ -20,14 +20,14 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
   });
 
   socket.on('start', function() {
-
+    startGame();
   });
 
   function initGameHandlers() {
     $('#create-game').on('click', function() {
       $.ajax({
         type: 'POST',
-        url: 'http://192.168.1.142:3000/createGame',
+        url: 'http://localhost:3000/createGame',
         contentType: 'application/json',
         data: JSON.stringify({
           playerName: $('#username').val(),
@@ -40,25 +40,29 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
     });
 
     $("#join-game").on("click", function() {
-      gameId = $("#game-id").val();
+      gameID = $("#game-id").val();
       $.ajax({
-        url: "http://192.168.1.142:3000/joinGame",
+        url: "http://localhost:3000/joinGame",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({
           playerName: $("#username").val(),
-          socketId: socketId,
-          gameId: gameId
+          socketId: socketID,
+          gameId: gameID
           })
         }).done(function(result) {
-        console.log(result);
-          });
+          console.log(result);
+        });
     });
   }
 
   function startGame() {
     var canvas = document.getElementById('game'),
         ctx = canvas.getContext('2d');
+
+    $('.hidden').removeClass('hidden');
+    $('#game-options').addClass('hidden');
+    $('body').addClass('grass-background');
 
     window.addEventListener('keydown', input.handleInput, false);
     field.setBounds(canvas.width, canvas.height);

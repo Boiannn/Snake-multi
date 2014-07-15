@@ -69,9 +69,9 @@ app.all("*", function(req, res, next) {
 
 app.use(bodyParser.json());
 
-app.get("/", function(req, res) {
-  res.sendfile("../client/snake.html");
-});
+// app.get("/", function(req, res) {
+//   res.sendfile("../client/snake.html");
+// });
 
 app.post("/createGame", function(req, res) {
   var
@@ -125,6 +125,7 @@ app.post("/joinGame", function(req, res) {
         player1: host.playerName,
         player2: playerName
       });
+
       res.json({
         status: "SUCCESS"
       });
