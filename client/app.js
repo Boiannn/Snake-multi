@@ -3,8 +3,8 @@ require.config({
     'snake': 'modules/snake',
     'field': 'modules/field',
     'score': 'modules/score',
-    'input': 'modules/input-handler'
-    'food': 'modules/food',
+    'input': 'modules/input-handler',
+    'food': 'modules/food'
   }
 });
 
@@ -38,7 +38,24 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
         consoloe.log(data);
       });
     });
+
+    $("#join-game").on("click", function() {
+      gameId = $("#joinGameId").val();
+      $.ajax({
+        url: "http://192.168.1.142:3000/joinGame",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          playerName: $("#playerName").val(),
+          socketId: socketId,
+          gameId: gameId
+          })
+        }).done(function(result) {
+        console.log(result);
+          });
+    });
   }
+
 
 
   function startGame() {
