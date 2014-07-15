@@ -35,18 +35,18 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
         })
       }).done(function(data) {
         gameID = data.gameId;
-        consoloe.log(data);
+        console.log(data);
       });
     });
 
     $("#join-game").on("click", function() {
-      gameId = $("#joinGameId").val();
+      gameId = $("#game-id").val();
       $.ajax({
         url: "http://192.168.1.142:3000/joinGame",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({
-          playerName: $("#playerName").val(),
+          playerName: $("#username").val(),
           socketId: socketId,
           gameId: gameId
           })
@@ -55,8 +55,6 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
           });
     });
   }
-
-
 
   function startGame() {
     var canvas = document.getElementById('game'),
