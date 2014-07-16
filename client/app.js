@@ -12,7 +12,8 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
 
   var socket = new io('http://localhost:3000'),
       socketID = null,
-      gameID = null;
+      gameID = null,
+      canvasCtx = $('canvas')[0].getContext('2d');
 
   socket.on('connect', function() {
     socketID = socket.io.engine.id;
@@ -21,6 +22,17 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
 
   socket.on('start', function() {
     startGame();
+  });
+
+  socket.on('render', function(data) {
+    var snake = JSON.parse(data).snakeData;
+
+    canvasCtx.fillStyle = '#ff0000';
+
+    for (var i = snake.length - 1; i >= 0; i-=1) {
+      canvasCtx.fillRect(snake[i].x, snake[i].y, 10, 10);
+    }
+
   });
 
   function initGameHandlers() {
@@ -72,6 +84,12 @@ require(['snake', 'field', 'input', 'food'], function(snake, field, input, food)
       field.draw(ctx);
       food.generate(ctx, 10);
       snake.update(ctx);
+
+      socket.emit('move', JSON.stringify({
+        gameId: gameID,
+        snakeData: snake.getSnake()
+      }));
+
     }, 100);
   }
 

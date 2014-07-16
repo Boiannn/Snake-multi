@@ -40,7 +40,9 @@ function socketDisconected(socketId) {
 
 // "{playerName}-{5 letters from socketId} - {random number between 1 and 1000}"
 function createGameId(playerName, socketId) {
-  return [playerName.toString(), socketId.substring(0, 5), _.random(1, 1000).toString()].join("-");
+  return [playerName.toString(),
+          socketId.substring(0, 5),
+          _.random(1, 1000).toString()].join("-");
 }
 
 io.on('connection', function(socket){
@@ -48,13 +50,15 @@ io.on('connection', function(socket){
 
   socket.on("move", function(data) {
     var gameId = data.gameId;
-    if(gameIdToPlayers[gameId]) {
-      emitTo(_.pluck(gameIdToPlayers[gameId], "socketId"), "render", data);
-    }
+    socket.broadcast.emit('render', data);
+    // if(gameIdToPlayers[gameId]) {
+    //   emitTo(_.pluck(gameIdToPlayers[gameId], "socketId"), "render", data);
+    // }
   });
 
   socket.on("disconnect", function() {
     socketDisconected(this.id);
+    console.log(this.id + ' disconnected');
   });
 });
 

@@ -36,6 +36,10 @@ define(['food', 'score', 'field'], function(food, score, field) {
     return direction;
   }
 
+  function getSnake() {
+    return snake.slice();
+  }
+
   function setDirection(newDirection) {
     direction = newDirection;
   }
@@ -137,7 +141,8 @@ define(['food', 'score', 'field'], function(food, score, field) {
     update: updateSnake,
     getDirection: getDirection,
     setDirection: setDirection,
-    isSnakeAlive: isSnakeAlive
+    isSnakeAlive: isSnakeAlive,
+    getSnake: getSnake
   };
 
 });
