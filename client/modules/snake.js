@@ -1,148 +1,124 @@
-define(['food', 'score', 'field'], function(food, score, field) {
+define(function() {
   'use strict';
 
-  var snake = [],
-      isSnakeAlive = true,
-      direction = 'right',
-      snakeColor = '#186600',
-      snakeBodySize;
+  var bodySize = 10,
+      bodyLength = 3,
+      directions = ['up', 'right', 'down', 'left'];
 
-  // The snake starts with the defined body
-  // length. We need to push the coordinates
-  // of each snake block so we can then draw
-  // them on the canvas
-  function init(snakeLength, segmentSize, startX, startY) {
-    snakeBodySize = segmentSize;
+  function createSnakeBody(length, startX, startY, dir) {
+    var body = [],
+        offset = dir === 'left' ? -1 : 1;
 
-    for (var i = 1; i <= snakeLength; i+=1) {
-      snake.push({
-        x: startX - (snakeLength - i) * snakeBodySize,
+    for (var i = 0; i < length; i+=1) {
+      body.push({
+        x: startX + (i * bodySize * offset),
         y: startY
       });
     }
+
+    return body;
   }
 
-  function getHead() {
-    var headX = snake[snake.length - 1].x,
-        headY = snake[snake.length - 1].y;
-
-    return {
-      x: headX,
-      y: headY
-    };
-  }
-
-  function getDirection() {
-    return direction;
-  }
-
-  function getSnake() {
-    return snake.slice();
-  }
-
-  function setDirection(newDirection) {
-    direction = newDirection;
-  }
-
-  function updateSnake(canvasCtx) {
-    var head = getHead();
-
-    if (!isSnakeInFieldBounds() || snakeBitesItself()) {
-      isSnakeAlive = false;
+  function isValidDirection(dir) {
+    if (typeof dir !== 'string') {
+      return false;
     }
 
-    if (snakeEatsFood()) {
-      food.eat();
-      snake.unshift({
-        x: head.x,
-        y: head.y
-      });
-
-      score.increaseScore();
+    if (directions.indexOf(dir) < 0) {
+      return false;
     }
 
-    if (isSnakeAlive) {
-      moveSnake();
+    if (dir === 'left' && this.getDirection() === 'right') {
+      return false;
     }
 
-    drawSnake(canvasCtx);
-  }
-
-  function drawSnake(canvasCtx) {
-    var bodyX,
-        bodyY;
-
-    canvasCtx.fillStyle = snakeColor;
-
-    for (var i = snake.length - 1; i >= 0; i-=1) {
-      bodyX = snake[i].x;
-      bodyY = snake[i].y;
-
-      canvasCtx.fillRect(bodyX, bodyY, snakeBodySize, snakeBodySize);
+    if (dir === 'right' && this.getDirection() === 'left') {
+      return false;
     }
-  }
 
-  function isSnakeInFieldBounds() {
-    var head = getHead();
+    if (dir === 'up' && this.getDirection() === 'down') {
+      return false;
+    }
 
-    if (head.x <= 20 || head.x >= 480 - snakeBodySize ||
-        head.y <= 20 || head.y >= 480 - snakeBodySize) {
+    if (dir === 'down' && this.getDirection() === 'up') {
       return false;
     }
 
     return true;
   }
 
-  function snakeBitesItself() {
-    var head = getHead();
+  function Snake(startX, startY, direction) {
+    this._size = bodySize;
+    this._body = createSnakeBody(bodyLength, startX, startY, direction);
+    this._direction = direction || 'right';
+    this.isAlive = true;
+  }
 
-    for (var i = 0; i < snake.length - 1; i+=1) {
-      if (head.x === snake[i].x && head.y === snake[i].y) {
+  Snake.prototype.getHead = function getHead() {
+    return {
+      x: this._body[this._body.length - 1].x,
+      y: this._body[this._body.length - 1].y
+    };
+  };
+
+  Snake.prototype.getBody = function getBody() {
+    return this._body.slice();
+  };
+
+  Snake.prototype.getSize = function getSize() {
+    return this._size;
+  };
+
+  Snake.prototype.getDirection = function getDirection() {
+    return this._direction;
+  };
+
+  Snake.prototype.setDirection = function setDirection(newDirection) {
+    if (isValidDirection.call(this, newDirection)) {
+      this._direction = newDirection;
+    }
+  };
+
+  Snake.prototype.move = function move() {
+    var head = this.getHead(),
+        newHead = this._body.shift();
+
+    if (this._direction === 'left') {
+      newHead.x = head.x - bodySize;
+      newHead.y = head.y;
+    } else if (this._direction === 'up') {
+      newHead.x = head.x;
+      newHead.y = head.y - bodySize;
+    } else if (this._direction === 'right') {
+      newHead.x = head.x + bodySize;
+      newHead.y = head.y;
+    } else if (this._direction === 'down') {
+      newHead.x = head.x;
+      newHead.y = head.y + bodySize;
+    }
+
+    this._body.push(newHead);
+  };
+
+  Snake.prototype.grow = function grow() {
+    this._body.unshift(this.getHead());
+  };
+
+  Snake.prototype.isEatingItself = function isEatingItself() {
+    // Cycle over all the segments of the snake
+    // but the last last one since it is the
+    // actual head and its coordinates will always be equal
+    var head = this.getHead();
+
+    for (var i = 0; i < this._body.length - 1; i+=1) {
+      if (this._body[i].x === head.x && this._body[i].y === head.y) {
         return true;
       }
     }
 
     return false;
-  }
-
-  function moveSnake() {
-    var head = getHead(),
-        newHead = snake.shift();
-
-    if (direction === 'left') {
-      newHead.x = head.x - snakeBodySize;
-      newHead.y = head.y;
-    } else if (direction === 'up') {
-      newHead.x = head.x;
-      newHead.y = head.y - snakeBodySize;
-    } else if (direction === 'right') {
-      newHead.x = head.x + snakeBodySize;
-      newHead.y = head.y;
-    } else if (direction === 'down') {
-      newHead.x = head.x;
-      newHead.y = head.y + snakeBodySize;
-    }
-
-    snake.push(newHead);
-  }
-
-  function snakeEatsFood() {
-    var head = getHead();
-
-    if (head.x === food.position.x && head.y === food.position.y) {
-      return true;
-    }
-
-    return false;
-  }
-
-  return {
-    init: init,
-    update: updateSnake,
-    getDirection: getDirection,
-    setDirection: setDirection,
-    isSnakeAlive: isSnakeAlive,
-    getSnake: getSnake
   };
+
+  return Snake;
 
 });
